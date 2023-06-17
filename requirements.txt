@@ -1,5 +1,0 @@
-os
-glob
-argparse
-imagesize
-opencv-python
