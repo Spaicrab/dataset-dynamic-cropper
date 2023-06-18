@@ -2,11 +2,11 @@ import argparse
 import os, glob
 import imagesize
 import cv2 as cv
-from classes.YoloDatasetGrabber import YoloDatasetGrabber
-from classes.BoundingBoxes import BoundingBoxes
-from classes.Cropper import Cropper
+from .classes.YoloDatasetGrabber import YoloDatasetGrabber
+from .classes.BoundingBoxes import BoundingBoxes
+from .classes.Cropper import Cropper
 
-class DynamicCropper:
+class Main:
     def __init__(self, raw_args = None):
         parser = argparse.ArgumentParser()
         parser = argparse.ArgumentParser(description='Dynamically crops all images in a dataset.')
@@ -86,7 +86,7 @@ class DynamicCropper:
         return processed_files
 
 def main(raw_args = None):
-    dataset_cropper = DynamicCropper(raw_args)
+    dataset_cropper = Main(raw_args)
     total_processed_files = 0
     if dataset_cropper.recursive:
         print("Processing dataset...")
