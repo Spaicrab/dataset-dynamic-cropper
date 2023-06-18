@@ -7,7 +7,7 @@ Output is automatically put into a "cropped" directory created inside of the pro
 # Syntax
 
 ```
-dynamic-cropper <INPUT_DIRECTORY> [-e <IMAGE_EXTENSION>] [-s <CROP_SIZE>] [-r]
+dataset-dynamic-cropper <INPUT_DIRECTORY> [-e <IMAGE_EXTENSION>] [-s <CROP_SIZE>] [-r]
 ```
 
 ## Arguments

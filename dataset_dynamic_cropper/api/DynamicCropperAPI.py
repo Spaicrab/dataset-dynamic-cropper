@@ -1,4 +1,4 @@
-from .main import main
+from .DynamicCropper import main
 
 class DynamicCropperAPI:
     def dynamic_crop(self, input_directory, image_extension, crop_size, recursive):

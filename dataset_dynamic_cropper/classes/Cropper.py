@@ -1,6 +1,6 @@
 from .BoundingBoxes import BoundingBoxes
 
-class DynamicCropper:
+class Cropper:
     def __init__(self, img_w, img_h, crop_w, crop_h):
         self.crop_w = min(img_w, crop_w)
         self.crop_h = min(img_h, crop_h)
