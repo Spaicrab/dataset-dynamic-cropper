@@ -2,28 +2,18 @@ import argparse
 
 from .DynamicCropper import DynamicCropper
 
-
-def main(raw_args=None):
-    parser = argparse.ArgumentParser()
+def main():
     parser = argparse.ArgumentParser(
         description="Dynamically crops all images in a dataset."
     )
-    parser.add_argument("INPUT_DIRECTORY", type=str, help="input directory")
-    parser.add_argument(
-        "--output-dir",
-        "-o",
-        default=None,
-        type=str,
-        required=False,
-        help="output directory - WARNING: if this is the same as INPUT_DIRECTORY, all files will be overwritten - default: INPUT_DIRECTORY/cropped",
-    )
+    parser.add_argument("INPUT_PATH", type=str, help="input directory")
+    parser.add_argument("OUTPUT_PATH", type=str, help="output directory - WARNING: if this is the same as INPUT_DIRECTORY, all files will be overwritten")
     parser.add_argument(
         "--image-ext",
-        "-e",
-        default=".jpg",
         type=str,
+        default="jpg",
         required=False,
-        help="extension of dataset images - default: .jpg",
+        help="extension of dataset images - default: jpg",
     )
     parser.add_argument(
         "--size",
@@ -36,16 +26,15 @@ def main(raw_args=None):
     parser.add_argument(
         "--skip", type=int, default=1, required=False, help="skip - default: 1"
     )
-    args = parser.parse_args(raw_args)
+    args = parser.parse_args()
 
-    if args.image_ext[0] != ".":
-        args.image_ext = "." + args.image_ext
+    if args.image_ext[0] == ".":
+        args.image_ext = args.image_ext[1:]
 
     dataset_cropper = DynamicCropper(args.size)
     dataset_cropper.dynamic_crop(
-        args.INPUT_DIRECTORY, args.output_dir, args.image_ext, args.skip
+        args.INPUT_PATH, args.OUTPUT_PATH, args.image_ext, args.skip
     )
-
 
 if __name__ == "__main__":
     main()
