@@ -16,22 +16,20 @@ class DynamicCropper:
         center_x, center_y = cropper.get_crop_center(img_w, img_h, xM, xm, yM, ym)
         cropped_img = cropper.crop(img, center_x, center_y, img_w, img_h)
         cropped_img_shape = cropped_img.shape
-        bbs.to_cropped(cropped_img_shape[1], cropped_img_shape[0], center_x, center_y)
-        return cropped_img, bbs
+        out_bbs = bbs.to_cropped(cropped_img_shape[1], cropped_img_shape[0], center_x, center_y)
+        return cropped_img, out_bbs
 
     def process_file(self, img_path, output_path):
         print(f"\r{img_path}", end="")
         grabber = YoloDatasetGrabber()
-        img, bbs, label_path = grabber.get_data(img_path)  # Could raise an exception
-        processed_file, out_img, out_bbs = self.crop_img(img, bbs)
+        img, bbs, label_path = grabber.get_data(img_path)
+        out_img, out_bbs = self.crop_img(img, bbs)
         out_label = out_bbs.label()
-        if processed_file:
-            out_img_path = output_path + "/" + os.path.basename(img_path)
-            # out_label_path = out_img_path.replace(self.image_extension, ".txt")
-            pre_extension_path, extension = os.path.splitext(out_img_path.replace("\\", "/"))
-            out_label_path = pre_extension_path + ".txt"
-            grabber.write_data(out_img_path, out_label_path, out_img, out_label)
-        return processed_file
+        out_img_path = output_path + "/" + os.path.basename(img_path)
+        # out_label_path = out_img_path.replace(self.image_extension, ".txt")
+        pre_extension_path, extension = os.path.splitext(out_img_path.replace("\\", "/"))
+        out_label_path = pre_extension_path + ".txt"
+        grabber.write_data(out_img_path, out_label_path, out_img, out_label)
     
     def process_directory(self, input_path, output_path = None, image_extension = "png", skip = 1):
         if output_path == None:
@@ -43,8 +41,11 @@ class DynamicCropper:
         for img_path in glob.iglob(input_path + '/*' + image_extension):
             counter += 1
             if counter % self.skip == 0:
-                if self.process_file(img_path, output_path):
-                    processed_files += 1
+                try:
+                    self.process_file(img_path, output_path)
+                except:
+                    continue
+                processed_files += 1
         return processed_files
 
     def process_directory_recursively(self, input_path, output_path = None, image_extension = "png", skip = 1):
@@ -67,8 +68,11 @@ class DynamicCropper:
                     if counter % self.skip == 0:
                         if not os.path.exists(current_output_path):
                             os.mkdir(current_output_path)
-                        if self.process_file(img_path, current_output_path):
-                            processed_files += 1
+                        try:
+                            self.process_file(img_path, current_output_path)
+                        except:
+                            continue
+                        processed_files += 1
         return processed_files
 
     def dynamic_crop(self, input_path, output_path, image_extension="png", skip=1, recursive=False):
