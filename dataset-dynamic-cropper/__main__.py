@@ -10,6 +10,7 @@ def main():
     parser.add_argument("OUTPUT_PATH", type=str, help="output directory - WARNING: if this is the same as INPUT_DIRECTORY, all files will be overwritten")
     parser.add_argument(
         "--image-ext",
+        "-e",
         type=str,
         default="jpg",
         required=False,

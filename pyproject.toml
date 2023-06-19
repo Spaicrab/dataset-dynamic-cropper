@@ -1,7 +1,7 @@
 
 [project]
 name = "dataset-dynamic-cropper"
-version = "0.9.0"
+version = "1.0.0"
 description = "Dynamically crops all images in a dataset."
 authors = [
     {name = "Spaicrab", email = "giuliodf2005@gmail.com"},

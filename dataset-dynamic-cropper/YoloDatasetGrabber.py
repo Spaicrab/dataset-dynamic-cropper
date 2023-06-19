@@ -22,9 +22,9 @@ class YoloDatasetGrabber:
     def iget_directory_data(self, directory_path, img_extension = "jpg", recursive = False):
         file_condition = directory_path
         if recursive:
-            file_condition.append('/**/*.' + img_extension)
+            file_condition += '/**/*.' + img_extension
         else:
-            file_condition.append('/*.' + img_extension)
+            file_condition += '/*.' + img_extension
         for img_path in glob.iglob(file_condition, recursive = recursive):
             try:
                 img, bbs, label_path = self.get_data(img_path)
@@ -33,7 +33,7 @@ class YoloDatasetGrabber:
                 pass
 
     def get_directory_data(self, directory_path, img_extension = "jpg", recursive = False):
-        retList = []
-        for out_tuple in self.iget_directory_data(directory_path, img_extension, recursive):
-            retList.append(out_tuple)
-        return retList
+        data_list = []
+        for data_tuple in self.iget_directory_data(directory_path, img_extension, recursive):
+            data_list.append(data_tuple)
+        return data_list
