@@ -21,8 +21,8 @@ class DynamicCropper:
         center_x, center_y = cropper.get_crop_center(img_w, img_h, xM, xm, yM, ym)
         cropped_img = cropper.crop(img, center_x, center_y, img_w, img_h)
         cropped_img_shape = cropped_img.shape
-        out_bbs = bbs.to_cropped(cropped_img_shape[1], cropped_img_shape[0], center_x, center_y)
-        return cropped_img, out_bbs
+        bbs.to_cropped(cropped_img_shape[1], cropped_img_shape[0], center_x, center_y)
+        return cropped_img, bbs
 
     def process_file(self, img_path, output_path):
         print(f"\r{img_path}", end="")
@@ -36,58 +36,43 @@ class DynamicCropper:
         out_label_path = pre_extension_path + ".txt"
         grabber.write_data(out_img_path, out_label_path, out_img, out_label)
     
-    def process_directory(self, input_path, output_path = None, image_extension = "png", skip = 1):
-        if output_path == None:
-            output_path = input_path + "/cropped"
-        if not os.path.exists(output_path):
-            os.mkdir(output_path)
-        processed_files = 0
-        counter = 0
-        for img_path in glob.iglob(input_path + '/*' + image_extension):
-            counter += 1
-            if counter % self.skip == 0:
-                try:
-                    self.process_file(img_path, output_path)
-                except:
-                    continue
-                processed_files += 1
-        return processed_files
+    # def process_directory(self, input_path, output_path = None, image_extension = "png", skip = 1):
+    #     if output_path == None:
+    #         output_path = input_path + "/cropped"
+    #     os.makedirs(output_path, exist_ok=True)
+    #     processed_files = 0
+    #     counter = 0
+    #     for img_path in glob.iglob(input_path + '/*' + image_extension):
+    #         counter += 1
+    #         if counter % skip == 0:
+    #             try:
+    #                 self.process_file(img_path, output_path)
+    #             except:
+    #                 continue
+    #             processed_files += 1
+    #     return processed_files
 
-    def process_directory_recursively(self, input_path, output_path = None, image_extension = "png", skip = 1):
+    def process_directory(self, input_path, output_path = None, image_extension = "png", skip = 1):
+        os.makedirs(output_path, exist_ok=True )
         processed_files = 0
         counter = 0
         for root_path, dir_paths, file_paths in os.walk(input_path):
             for img_path in file_paths:
                 if img_path.endswith(image_extension):
                     img_path = os.path.join(root_path, img_path)
-                    directory_path = os.path.dirname(img_path)
-                    current_output_path = None
-                    if output_path == None:
-                        if not directory_path.replace("\\", "/").endswith("/cropped"):
-                            current_output_path = directory_path + "/cropped"
-                        else:
-                            continue
-                    else:
-                        current_output_path = directory_path.replace(input_path, output_path)
                     counter += 1
-                    if counter % self.skip == 0:
-                        if not os.path.exists(current_output_path):
-                            os.mkdir(current_output_path)
+                    if counter % skip == 0:
                         try:
-                            self.process_file(img_path, current_output_path)
+                            self.process_file(img_path, output_path)
                         except:
                             continue
                         processed_files += 1
-        return processed_files
+        return counter, processed_files
 
-    def dynamic_crop(self, input_path, output_path, image_extension="png", skip=1, recursive=False):
+    def dynamic_crop(self, input_path, output_path, image_extension="png", skip=1):
         total_processed_files = 0
-        if recursive:
-            print("Processing dataset...")
-            total_processed_files = self.process_directory_recursively(input_path, output_path, image_extension, skip)
-        else:
-            print("Processing directory...")
-            total_processed_files = self.process_directory(input_path, output_path, image_extension, skip)
-
-        print("\nProcessed {processedCount} files.".format(processedCount = total_processed_files))
+        print("Processing dataset...")
+        counter, total_processed_files = self.process_directory(input_path, output_path, image_extension, skip)
+        print("\Filtered {processedCount} of {totalCount} files.".format(processedCount = total_processed_files,
+                                                                            totalCount = counter))
         print("All Done!")
