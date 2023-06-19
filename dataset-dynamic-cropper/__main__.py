@@ -11,10 +11,11 @@ class Main:
         parser = argparse.ArgumentParser()
         parser = argparse.ArgumentParser(description='Dynamically crops all images in a dataset.')
         parser.add_argument('INPUT_DIRECTORY', type=str, help='input directory')
-        parser.add_argument('-e', '--image-ext', type=str, required=False, help='extension of dataset images - default: .png')
-        parser.add_argument('-s', '--size', type=int, required=False, help='cropped image size - default: 640')
-        parser.add_argument('-sk', '--skip', type=int, required=False, help='skip - default: 1')
-        parser.add_argument('-r', '--recursive', required=False, action='store_true', help='treat input directory as a dataset, recursively processing all subdirectories')
+        parser.add_argument('--output-dir', '-o', type=str, required=False, help='output directory - default: INPUT_DIRECTORY/cropped')
+        parser.add_argument('--image-ext', '-e', type=str, required=False, help='extension of dataset images - default: .png')
+        parser.add_argument('--size', '-s', type=int, required=False, help='cropped image size - default: 640')
+        parser.add_argument('--skip', type=int, required=False, help='skip - default: 1')
+        parser.add_argument('--recursive', '-r', required=False, action='store_true', help='treat input directory as a dataset, recursively processing all subdirectories')
         args = parser.parse_args(raw_args)
 
         self.directory_path = args.INPUT_DIRECTORY
@@ -31,6 +32,11 @@ class Main:
 
         if not args.skip: self.skip = 1
         else: self.skip = args.skip
+
+        if not args.output_dir:
+            self.output_path = None
+        else:
+            self.output_path = args.output_dir
         
     def crop_img(self, img, bbs):
         img_shape = img.shape
