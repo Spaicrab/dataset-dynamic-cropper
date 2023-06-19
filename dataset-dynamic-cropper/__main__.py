@@ -2,9 +2,9 @@ import argparse
 import os, glob
 import imagesize
 import cv2 as cv
-from .classes.YoloDatasetGrabber import YoloDatasetGrabber
-from .classes.BoundingBoxes import BoundingBoxes
-from .classes.Cropper import Cropper
+from .YoloDatasetGrabber import YoloDatasetGrabber
+from .BoundingBoxes import BoundingBoxes
+from .Cropper import Cropper
 
 class Main:
     def __init__(self, raw_args = None):
@@ -59,7 +59,9 @@ class Main:
         out_label = out_bbs.label()
         if processed_file:
             out_img_path = output_path + "/" + os.path.basename(img_path)
-            out_label_path = out_img_path.replace(self.image_extension, ".txt") 
+            # out_label_path = out_img_path.replace(self.image_extension, ".txt")
+            pre_extension_path, extension = os.path.splitext(out_img_path.replace("\\", "/"))
+            out_label_path = pre_extension_path + ".txt"
             grabber.write_data(out_img_path, out_label_path, out_img, out_label)
         return processed_file
 
