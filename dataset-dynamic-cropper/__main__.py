@@ -28,8 +28,9 @@ class Main:
         if not args.size: self.cropped_size = 640
         else: self.cropped_size = args.size
         
-    def crop_img(self, img, bbs, img_path, label_path):
-        img_w, img_h = imagesize.get(img_path)
+    def crop_img(self, img, bbs):
+        img_shape = img.shape
+        img_w, img_h = img_shape[1], img_shape[0]
         cropper = Cropper(img_w, img_h, self.cropped_size, self.cropped_size)
         bbs.to_pixel(img_w, img_h)
         xM, xm, yM, ym = cropper.get_borders(bbs)
@@ -51,7 +52,7 @@ class Main:
         except:
             print(" has an incorrect label, it wasn't cropped.")
             return False
-        processed_file, out_img, out_label = self.crop_img(img, bbs, img_path, label_path)
+        processed_file, out_img, out_label = self.crop_img(img, bbs)
         if processed_file:
             out_img_path = output_path + "/" + os.path.basename(img_path)
             out_label_path = out_img_path.replace(self.image_extension, ".txt") 
