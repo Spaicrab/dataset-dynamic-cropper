@@ -11,7 +11,7 @@ class Main:
         parser = argparse.ArgumentParser()
         parser = argparse.ArgumentParser(description='Dynamically crops all images in a dataset.')
         parser.add_argument('INPUT_DIRECTORY', type=str, help='input directory')
-        parser.add_argument('--output-dir', '-o', type=str, required=False, help='output directory - default: INPUT_DIRECTORY/cropped')
+        parser.add_argument('--output-dir', '-o', type=str, required=False, help='output directory - WARNING: if this is the same as INPUT_DIRECTORY, all files will be overwritten - default: INPUT_DIRECTORY/cropped')
         parser.add_argument('--image-ext', '-e', type=str, required=False, help='extension of dataset images - default: .png')
         parser.add_argument('--size', '-s', type=int, required=False, help='cropped image size - default: 640')
         parser.add_argument('--skip', type=int, required=False, help='skip - default: 1')
@@ -72,7 +72,11 @@ class Main:
         return processed_file
 
     def process_directory(self):
-        output_path = self.directory_path + "/cropped"
+        output_path = None
+        if self.output_path == None:
+            output_path = self.directory_path + "/cropped"
+        else:
+            output_path = self.output_path
         if not os.path.exists(output_path):
             os.mkdir(output_path)
         processed_files = 0
@@ -92,14 +96,20 @@ class Main:
                 if img_path.endswith(self.image_extension):
                     img_path = os.path.join(root_path, img_path)
                     directory_path = os.path.dirname(img_path)
-                    if not directory_path.replace("\\", "/").endswith("/cropped"):
-                        counter += 1
-                        if counter % self.skip == 0:
+                    output_path = None
+                    if self.output_path == None:
+                        if not directory_path.replace("\\", "/").endswith("/cropped"):
                             output_path = directory_path + "/cropped"
-                            if not os.path.exists(output_path):
-                                os.mkdir(output_path)
-                            if self.process_file(img_path, output_path):
-                                processed_files += 1
+                        else:
+                            continue
+                    else:
+                        output_path = directory_path.replace(self.directory_path, self.output_path)
+                    counter += 1
+                    if counter % self.skip == 0:
+                        if not os.path.exists(output_path):
+                            os.mkdir(output_path)
+                        if self.process_file(img_path, output_path):
+                            processed_files += 1
         return processed_files
 
 def main(raw_args = None):
