@@ -23,15 +23,7 @@ dataset-dynamic-cropper <INPUT_PATH> <OUTPUT_PATH> [-e <IMAGE_EXTENSION>] [-s <C
 
 # Modules
 
-- YoloDatasetGrabber
-- BoundingBoxes
-- Cropper
 - DynamicCropper
-
-**INPUT_DIRECTORY** is a directory path
-
-**IMAGE_EXTENSION** is a string containing an image extension (such as ".jpg")
-
-**CROP_SIZE** is a number smaller than the images' size
-
-**RECURSIVE** is a boolean, True if you want to process all subdirectories, otherwise false
+- BoundingBoxes
+- YoloDatasetGrabber
+- Cropper
