@@ -41,8 +41,7 @@ class Main:
         cropped_img = cropper.crop(img, center_x, center_y, img_w, img_h)
         cropped_img_shape = cropped_img.shape
         bbs.to_cropped(cropped_img_shape[1], cropped_img_shape[0], center_x, center_y)
-        label = bbs.label()
-        return True, cropped_img, label
+        return True, cropped_img, bbs
 
     def process_file(self, img_path, output_path):
         print(f"\r{img_path}", end="")
@@ -52,7 +51,8 @@ class Main:
         except:
             print(" has an incorrect label, it wasn't cropped.")
             return False
-        processed_file, out_img, out_label = self.crop_img(img, bbs)
+        processed_file, out_img, out_bbs = self.crop_img(img, bbs)
+        out_label = out_bbs.label()
         if processed_file:
             out_img_path = output_path + "/" + os.path.basename(img_path)
             out_label_path = out_img_path.replace(self.image_extension, ".txt") 
