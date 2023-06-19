@@ -1,32 +1,32 @@
 # Description
 
-Dynamically crops all images in a dataset.
-Images where all bounding boxes can't fit in the cropped image are scrapped.
-Output is automatically put into a "cropped" directory created inside of the processed directory.
+Dynamically crops all images in a dataset, centering the cropped area around the bounding boxes.
+Images where all bounding boxes can't fit in the cropped image are ignored.
 
 # Syntax
 
 ```
-dataset-dynamic-cropper <INPUT_DIRECTORY> [-e <IMAGE_EXTENSION>] [-s <CROP_SIZE>] [-r]
+dataset-dynamic-cropper <INPUT_PATH> <OUTPUT_PATH> [-e <IMAGE_EXTENSION>] [-s <CROP_SIZE>] [--skip <SKIP>]
 ```
 
 ## Arguments
 
-```<INPUT_DIRECTORY>``` Input directory with the images and their labels.
+``` <INPUT_PATH> ``` Input directory with the images and their labels.
 
-``` [-e (--img-ext) <IMAGE_EXTENSION>] ``` The extension used by the dataset's images -  default: ".png"
+``` <OUTPUT_PATH> ``` Output directory that will contain all filtered images and labels.
 
-``` [-s (--size) <CROP_SIZE>] ``` The width and height size of the output cropped images - default: "640"
+``` [-e (--img-ext) <IMAGE_EXTENSION>] ``` The extension used by the dataset's images -  default: "jpg"
 
-``` [-r (--recursive)] ``` Enables recursion throughout the INPUT_DIRECTORY's subdirectories.
+``` [-s (--size) <CROP_SIZE>] ``` The width and height size of the output cropped images - default: 640
 
-# API Usage
-```
-from api.DynamicCropperAPI import DynamicCropperAPI
+``` [--skip <SKIP>] ``` The skip - default: 1
 
-api = DynamicCropperAPI()
-api.dynamic_crop(INPUT_DIRECTORY, IMAGE_EXTENSION, CROP_SIZE, RESURSIVE)
-```
+# Modules
+
+- YoloDatasetGrabber
+- BoundingBoxes
+- Cropper
+- DynamicCropper
 
 **INPUT_DIRECTORY** is a directory path
 
