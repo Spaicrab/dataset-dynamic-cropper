@@ -63,16 +63,6 @@ class BoundingBoxes:
             bb[3] = int(bb[3] * img_w)
             bb[4] = int(bb[4] * img_h)
             self.bbs[i] = bb
-    
-    """
-    def offset(self, offset_x, offset_y):
-        if self.is_normalized: raise Exception("Bounding boxes need to be in pixel format.")
-        for i in range(len(self.bbs)):
-            bb = self.bbs[i]
-            bb[1] = bb[1] - int(offset_x)
-            bb[2] = bb[2] - int(offset_y)
-            self.bbs[i] = bb
-    """
 
     def borders(self):
         bb_class, bb_x, bb_y, bb_w, bb_h = self.bb_values(0)

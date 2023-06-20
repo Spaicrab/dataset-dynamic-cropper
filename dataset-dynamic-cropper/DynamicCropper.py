@@ -9,14 +9,23 @@ class DynamicCropper:
     def __init__(self, crop_size = "640"):
         self.crop_size = crop_size
 
-    def crop_img(self, img, center_x, center_y):
-        half_crop_w, half_crop_h = int(self.crop_w / 2), int(self.crop_h / 2)
+    def crop_img(self, img, crop_w, crop_h, center_x, center_y):
+        half_crop_w, half_crop_h = int(crop_w / 2), int(crop_h / 2)
         cropped_img = img[center_y - half_crop_h : center_y + half_crop_h,
                             center_x - half_crop_w : center_x + half_crop_w]
         return cropped_img
 
-    def get_crop_center(self, img_w, img_h, xM, xm, yM, ym):
-        half_crop_w, half_crop_h = int(self.crop_w / 2), int(self.crop_h / 2)
+    def get_img_size(self, img):
+        img_shape = img.shape
+        return img_shape[1], img_shape[0]
+
+    def borders_exceed(self, crop_w, crop_h, xM, xm, yM, ym):
+        if xM - xm >= int(crop_w) or yM - ym >= int(crop_h):
+            return True
+        return False
+
+    def get_crop_center(self, img_w, img_h, crop_w, crop_h, xM, xm, yM, ym):
+        half_crop_w, half_crop_h = int(crop_w / 2), int(crop_h / 2)
 
         # If all bounding boxes fit into a cropped area centered
         # around the middle of the image, don't crop
@@ -53,23 +62,18 @@ class DynamicCropper:
         
         return center_x, center_y
 
-    def borders_exceed(self, xM, xm, yM, ym):
-        if xM - xm >= int(self.crop_w) or yM - ym >= int(self.crop_h):
-            return True
-        return False
-
     def crop(self, img, bbs):
-        img_shape = img.shape
-        img_w, img_h = img_shape[1], img_shape[0]
-        # cropper = Cropper(img_w, img_h, self.crop_size, self.crop_size)
+        img_w, img_h = self.get_img_size(img)
+        crop_w, crop_h = min(img_w, crop_size), min(img_h, crop_size)
         bbs.to_pixel(img_w, img_h)
         xM, xm, yM, ym = bbs.borders()
-        if self.borders_exceed(xM, xm, yM, ym):
+        if self.borders_exceed(crop_w, crop_h, xM, xm, yM, ym):
             raise Exception("The bounding boxes can't fit into the cropped area.")
-        center_x, center_y = self.get_crop_center(img_w, img_h, xM, xm, yM, ym)
-        cropped_img = self.crop_img(img, center_x, center_y)
-        cropped_img_shape = cropped_img.shape
-        bbs.to_cropped(cropped_img_shape[1], cropped_img_shape[0], center_x, center_y)
+        center_x, center_y = self.get_crop_center(img_w, img_h, crop_w, crop_h, xM, xm, yM, ym)
+        cropped_img = self.crop_img(img, crop_w, crop_h, center_x, center_y)
+        # cropped_img_shape = cropped_img.shape
+        # bbs.to_cropped(cropped_img_shape[1], cropped_img_shape[0], center_x, center_y)
+        bbs.to_cropped(crop_w, crop_h, center_x, center_y)
         return cropped_img, bbs
 
     def process_file(self, img_path, output_path):
