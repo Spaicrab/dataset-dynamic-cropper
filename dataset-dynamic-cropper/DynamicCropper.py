@@ -63,7 +63,7 @@ class DynamicCropper:
 
     def crop(self, img, bbs):
         img_w, img_h = self.get_img_size(img)
-        crop_w, crop_h = min(img_w, crop_size), min(img_h, crop_size)
+        crop_w, crop_h = min(img_w, self.crop_size), min(img_h, self.crop_size)
         bbs.to_pixel(img_w, img_h)
         xM, xm, yM, ym = bbs.borders()
         if self.borders_exceed(crop_w, crop_h, xM, xm, yM, ym):
