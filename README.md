@@ -26,4 +26,3 @@ dataset-dynamic-cropper <INPUT_PATH> <OUTPUT_PATH> [-e <IMAGE_EXTENSION>] [-s <C
 - DynamicCropper
 - BoundingBoxes
 - YoloDatasetGrabber
-- Cropper
