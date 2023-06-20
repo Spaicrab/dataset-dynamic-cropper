@@ -1,4 +1,7 @@
+"""Bounding boxes util"""
+
 class BoundingBoxes:
+    """A representation of multiple bounding boxes for Yolo Format"""
     def __init__(self, label, format="normalized"):
         self.format = format
         self.bbs = []
@@ -36,7 +39,7 @@ class BoundingBoxes:
             bb_label += " " + str(bb[j])
         return bb_label
 
-    def label(self):
+    def label(self) -> str:
         label = self.bb_label(0)
         for i in range(1, len(self.bbs)):
             label += "\n" + self.bb_label(i)

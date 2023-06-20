@@ -1,3 +1,5 @@
+"""Dynamic cropping module"""
+
 import os, glob
 import imagesize
 import cv2 as cv
@@ -18,7 +20,7 @@ class DynamicCropper:
         img_shape = img.shape
         return img_shape[1], img_shape[0]
 
-    def borders_exceed(self, crop_w, crop_h, xM, xm, yM, ym):
+    def borders_exceed(self, crop_w, crop_h, xM, xm, yM, ym) -> bool:
         if xM - xm >= int(crop_w) or yM - ym >= int(crop_h):
             return True
         return False
@@ -79,11 +81,8 @@ class DynamicCropper:
         grabber = YoloDatasetGrabber()
         img, bbs, label_path = grabber.get_data(img_path)
         out_img, out_bbs = self.crop(img, bbs)
-        out_label = out_bbs.label()
-        out_img_path = output_path + "/" + os.path.basename(img_path)
-        pre_extension_path, extension = os.path.splitext(out_img_path.replace("\\", "/"))
-        out_label_path = pre_extension_path + ".txt"
-        grabber.write_data(out_img_path, out_label_path, out_img, out_label)
+        img_name = os.path.basename(img_path)
+        grabber.write_data(output_path, img_name, out_img, out_bbs)
 
     def process_directory(self, input_path, output_path = None, image_extension = "png", skip = 1, recursive = True):
         os.makedirs(output_path, exist_ok=True )
@@ -100,11 +99,8 @@ class DynamicCropper:
             except:
                 continue
             filtered_files += 1
-            out_label = out_bbs.label()
-            out_img_path = output_path + "/" + os.path.basename(img_path)
-            pre_extension_path, extension = os.path.splitext(out_img_path.replace("\\", "/"))
-            out_label_path = pre_extension_path + ".txt"
-            grabber.write_data(out_img_path, out_label_path, out_img, out_label)
+            img_name = os.path.basename(img_path)
+            grabber.write_data(output_path, img_name, out_img, out_bbs)
         print("\r", end="")
         return total_processed_files, filtered_files
 

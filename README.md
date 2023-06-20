@@ -27,10 +27,15 @@ dataset-dynamic-cropper <INPUT_PATH> <OUTPUT_PATH> [-e <IMAGE_EXTENSION>] [-s <C
 
 ## DynamicCropper
 ### Usage
-
+```
+cropper = DynamicCropper(crop_size)
+cropper.dynamic_crop(input_path, output_path, [image_extension], [skip], [recursive])
+```
 
 ## BoundingBoxes
+### Usage
 
 
 ## YoloDatasetGrabber
+### Usage
 
