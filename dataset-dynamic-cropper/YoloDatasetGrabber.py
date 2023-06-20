@@ -14,7 +14,7 @@ class YoloDatasetGrabber:
         label_path = pre_extension_path + ".txt"
         if not os.path.exists(label_path):
             raise Exception(img_path + " doesn't have a label.")
-        with open(os.path.join(os.getcwd(), label_path), 'r') as label:
+        with open(label_path, 'r') as label:
             try: bbs = BoundingBoxes(label)
             except: raise Exception(label_path + " uses an incorrect format.")
             return img, bbs, label_path
