@@ -12,23 +12,26 @@ class DynamicCropper:
         self.crop_size = crop_size
 
     def crop_img(self, img, center_x, center_y):
+        """Returns img cropped with center_x and center_y as center"""
         half_crop_w, half_crop_h = int(self.crop_size / 2), int(self.crop_size / 2)
         cropped_img = img[center_y - half_crop_h : center_y + half_crop_h,
                             center_x - half_crop_w : center_x + half_crop_w]
         return cropped_img
 
     def get_img_size(self, img):
-        """Returns img width and height"""
+        """Returns img width and height of img"""
         img_shape = img.shape
         return img_shape[1], img_shape[0]
 
     def borders_exceed(self, img_w, img_h, xM, xm, yM, ym) -> bool:
+        """Returns True if bounding boxes' borders don't fit in a croppable area"""
         crop_w, crop_h = min(img_w, self.crop_size), min(img_h, self.crop_size)
         if xM - xm >= int(crop_w) or yM - ym >= int(crop_h):
             return True
         return False
 
     def get_crop_center(self, img_w, img_h, xM, xm, yM, ym):
+        """Returns a point that's centered around the bounding boxes"""
         crop_w, crop_h = min(img_w, self.crop_size), min(img_h, self.crop_size)
         half_crop_w, half_crop_h = int(crop_w / 2), int(crop_h / 2)
 
@@ -67,7 +70,8 @@ class DynamicCropper:
         
         return center_x, center_y
 
-    def crop(self, img, bbs):
+    def dynamic_crop(self, img, bbs):
+        """Returns img and bbs cropped dynamically"""
         img_w, img_h = self.get_img_size(img)
         bbs.to_pixel(img_w, img_h)
         xM, xm, yM, ym = bbs.borders()
@@ -80,13 +84,15 @@ class DynamicCropper:
         return cropped_img, bbs
 
     def process_file(self, img_path, output_path):
+        """Takes an image and its label file and writes their dynamically cropped version to output_path"""
         grabber = YoloDatasetGrabber()
         img, bbs, label_path = grabber.get_data(img_path)
-        out_img, out_bbs = self.crop(img, bbs)
+        out_img, out_bbs = self.dynamic_crop(img, bbs)
         img_name = os.path.basename(img_path)
         grabber.write_data(output_path, img_name, out_img, out_bbs)
 
     def process_directory(self, input_path, output_path = None, image_extension = "png", skip = 1, recursive = True):
+        """Dynamically crops a dataset and writes the output to output_path"""
         print("Processing dataset...")
         filtered_files = 0
         total_processed_files = 0
@@ -98,7 +104,7 @@ class DynamicCropper:
             if total_processed_files % skip != 0:
                 continue
             try:
-                out_img, out_bbs = self.crop(img, bbs)
+                out_img, out_bbs = self.dynamic_crop(img, bbs)
             except:
                 continue
             filtered_files += 1
