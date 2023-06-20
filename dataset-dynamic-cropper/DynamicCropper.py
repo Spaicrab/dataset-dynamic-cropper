@@ -3,7 +3,6 @@ import imagesize
 import cv2 as cv
 from .YoloDatasetGrabber import YoloDatasetGrabber
 from .BoundingBoxes import BoundingBoxes
-from .Cropper import Cropper
 
 class DynamicCropper:
     def __init__(self, crop_size = "640"):
