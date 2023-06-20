@@ -81,17 +81,17 @@ class BoundingBoxes:
             ym = min(ym, bb_y - bb_h / 2)
         return xM, xm, yM, ym
 
-    def to_cropped(self, crop_w, crop_h, center_x, center_y):
+    def to_cropped(self, cropped_img_w, cropped_img_h, center_x, center_y):
         if not self.is_normalized: raise Exception("Bounding boxes need to be in pixel format.")
         self.format = "normalized"
-        offset_x = center_x - crop_w / 2
-        offset_y = center_y - crop_h / 2
+        offset_x = center_x - cropped_img_w / 2
+        offset_y = center_y - cropped_img_h / 2
         for i in range(len(self.bbs)):
             bb = self.bbs[i]
             for j in range(1, len(bb)): bb[j] = float(bb[j])
-            bb[1] = float((bb[1] - offset_x) / crop_w)
-            bb[2] = float((bb[2] - offset_y) / crop_h)
-            bb[3] = float(bb[3] / crop_w)
-            bb[4] = float(bb[4] / crop_h)
+            bb[1] = float((bb[1] - offset_x) / cropped_img_w)
+            bb[2] = float((bb[2] - offset_y) / cropped_img_h)
+            bb[3] = float(bb[3] / cropped_img_w)
+            bb[4] = float(bb[4] / cropped_img_h)
             self.bbs[i] = bb
         

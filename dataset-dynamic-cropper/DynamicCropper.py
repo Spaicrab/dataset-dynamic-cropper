@@ -7,25 +7,29 @@ from .YoloDatasetGrabber import YoloDatasetGrabber
 from .BoundingBoxes import BoundingBoxes
 
 class DynamicCropper:
+    """Dynamic Cropper for Yolo format datasets"""
     def __init__(self, crop_size = "640"):
         self.crop_size = crop_size
 
-    def crop_img(self, img, crop_w, crop_h, center_x, center_y):
-        half_crop_w, half_crop_h = int(crop_w / 2), int(crop_h / 2)
+    def crop_img(self, img, center_x, center_y):
+        half_crop_w, half_crop_h = int(self.crop_size / 2), int(self.crop_size / 2)
         cropped_img = img[center_y - half_crop_h : center_y + half_crop_h,
                             center_x - half_crop_w : center_x + half_crop_w]
         return cropped_img
 
     def get_img_size(self, img):
+        """Returns img width and height"""
         img_shape = img.shape
         return img_shape[1], img_shape[0]
 
-    def borders_exceed(self, crop_w, crop_h, xM, xm, yM, ym) -> bool:
+    def borders_exceed(self, img_w, img_h, xM, xm, yM, ym) -> bool:
+        crop_w, crop_h = min(img_w, self.crop_size), min(img_h, self.crop_size)
         if xM - xm >= int(crop_w) or yM - ym >= int(crop_h):
             return True
         return False
 
-    def get_crop_center(self, img_w, img_h, crop_w, crop_h, xM, xm, yM, ym):
+    def get_crop_center(self, img_w, img_h, xM, xm, yM, ym):
+        crop_w, crop_h = min(img_w, self.crop_size), min(img_h, self.crop_size)
         half_crop_w, half_crop_h = int(crop_w / 2), int(crop_h / 2)
 
         # If all bounding boxes fit into a cropped area centered
@@ -65,16 +69,14 @@ class DynamicCropper:
 
     def crop(self, img, bbs):
         img_w, img_h = self.get_img_size(img)
-        crop_w, crop_h = min(img_w, self.crop_size), min(img_h, self.crop_size)
         bbs.to_pixel(img_w, img_h)
         xM, xm, yM, ym = bbs.borders()
-        if self.borders_exceed(crop_w, crop_h, xM, xm, yM, ym):
+        if self.borders_exceed(img_w, img_h, xM, xm, yM, ym):
             raise Exception("The bounding boxes can't fit into the cropped area.")
-        center_x, center_y = self.get_crop_center(img_w, img_h, crop_w, crop_h, xM, xm, yM, ym)
-        cropped_img = self.crop_img(img, crop_w, crop_h, center_x, center_y)
-        # cropped_img_shape = cropped_img.shape
-        # bbs.to_cropped(cropped_img_shape[1], cropped_img_shape[0], center_x, center_y)
-        bbs.to_cropped(crop_w, crop_h, center_x, center_y)
+        center_x, center_y = self.get_crop_center(img_w, img_h, xM, xm, yM, ym)
+        cropped_img = self.crop_img(img, center_x, center_y)
+        cropped_img_w, cropped_img_h = self.get_img_size(cropped_img)
+        bbs.to_cropped(cropped_img_w, cropped_img_h, center_x, center_y)
         return cropped_img, bbs
 
     def process_file(self, img_path, output_path):
