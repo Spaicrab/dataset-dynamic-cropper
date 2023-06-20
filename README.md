@@ -29,13 +29,22 @@ dataset-dynamic-cropper <INPUT_PATH> <OUTPUT_PATH> [-e <IMAGE_EXTENSION>] [-s <C
 ### Usage
 ```
 cropper = DynamicCropper(crop_size)
-cropper.dynamic_crop(input_path, output_path, [image_extension], [skip], [recursive])
+cropper.process_directory(input_path, output_path, [image_extension], [skip], [recursive])
 ```
 
 ## BoundingBoxes
 ### Usage
+```
+import os
 
+with open(os.path.join(os.getcwd(), label_path), 'r') as label:
+    bbs = BoundingBoxes(label)
+```
 
 ## YoloDatasetGrabber
 ### Usage
-
+```
+grabber = YoloDatasetGrabber()
+data_list = grabber.get_directory_data(directory_path, [img_extension], [recursive])
+img, bbs, img_path, label_path = data_list[0]
+```
