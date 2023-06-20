@@ -24,7 +24,7 @@ class DynamicCropper:
         return img_shape[1], img_shape[0]
 
     def borders_exceed(self, img_w, img_h, xM, xm, yM, ym) -> bool:
-        """Returns True if bounding boxes' borders don't fit in a croppable area"""
+        """Returns True if bounding boxes' borders don't fit in a croppable area, otherwise False"""
         crop_w, crop_h = min(img_w, self.crop_size), min(img_h, self.crop_size)
         if xM - xm >= int(crop_w) or yM - ym >= int(crop_h):
             return True
