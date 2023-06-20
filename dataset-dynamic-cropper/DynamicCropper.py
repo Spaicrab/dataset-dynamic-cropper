@@ -105,10 +105,11 @@ class DynamicCropper:
             pre_extension_path, extension = os.path.splitext(out_img_path.replace("\\", "/"))
             out_label_path = pre_extension_path + ".txt"
             grabber.write_data(out_img_path, out_label_path, out_img, out_label)
+        print("\r", end="")
         return total_processed_files, filtered_files
 
     def dynamic_crop(self, input_path, output_path, image_extension = "png", skip = 1, recursive = True):
         filtered_files = 0
         print("Processing dataset...")
         total_processed_files, filtered_files = self.process_directory(input_path, output_path, image_extension, skip, recursive)
-        print(f"\rFiltered {filtered_files} of {total_processed_files} files.")
+        print(f"Filtered {filtered_files} of {total_processed_files} files.")
