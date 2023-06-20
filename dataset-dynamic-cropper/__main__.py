@@ -33,7 +33,7 @@ def main():
         args.image_ext = args.image_ext[1:]
 
     dataset_cropper = DynamicCropper(args.size)
-    dataset_cropper.dynamic_crop(
+    dataset_cropper.process_directory(
         args.INPUT_PATH, args.OUTPUT_PATH, args.image_ext, args.skip
     )
 

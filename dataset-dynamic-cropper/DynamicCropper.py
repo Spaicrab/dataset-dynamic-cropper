@@ -85,9 +85,10 @@ class DynamicCropper:
         grabber.write_data(output_path, img_name, out_img, out_bbs)
 
     def process_directory(self, input_path, output_path = None, image_extension = "png", skip = 1, recursive = True):
-        os.makedirs(output_path, exist_ok=True )
+        print("Processing dataset...")
         filtered_files = 0
         total_processed_files = 0
+        os.makedirs(output_path, exist_ok=True )
         grabber = YoloDatasetGrabber()
         for img, bbs, img_path, label_path in grabber.iget_directory_data(input_path, image_extension, recursive):
             total_processed_files += 1
@@ -101,11 +102,5 @@ class DynamicCropper:
             filtered_files += 1
             img_name = os.path.basename(img_path)
             grabber.write_data(output_path, img_name, out_img, out_bbs)
-        print("\r", end="")
+        print(f"\rFiltered {filtered_files} of {total_processed_files} files.")
         return total_processed_files, filtered_files
-
-    def dynamic_crop(self, input_path, output_path, image_extension = "png", skip = 1, recursive = True):
-        filtered_files = 0
-        print("Processing dataset...")
-        total_processed_files, filtered_files = self.process_directory(input_path, output_path, image_extension, skip, recursive)
-        print(f"Filtered {filtered_files} of {total_processed_files} files.")
