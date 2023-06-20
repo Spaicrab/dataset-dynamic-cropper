@@ -47,7 +47,4 @@ class YoloDatasetGrabber:
     def get_directory_data(self, directory_path, img_extension = "jpg", recursive = False):
         """Read data of all img files in the directory and its subdirectories.
         Returns a list of tuples with img, bbs, img_path, label_path"""
-        data_list = []
-        for data_tuple in self.iget_directory_data(directory_path, img_extension, recursive):
-            data_list.append(data_tuple)
-        return data_list
+        return list(self.iget_directory_data(directory_path, img_extension, recursive))
