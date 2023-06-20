@@ -63,7 +63,7 @@ class DynamicCropper:
         img_w, img_h = img_shape[1], img_shape[0]
         # cropper = Cropper(img_w, img_h, self.crop_size, self.crop_size)
         bbs.to_pixel(img_w, img_h)
-        xM, xm, yM, ym = self.get_borders(bbs)
+        xM, xm, yM, ym = bbs.borders()
         if self.borders_exceed(xM, xm, yM, ym):
             raise Exception("The bounding boxes can't fit into the cropped area.")
         center_x, center_y = self.get_crop_center(img_w, img_h, xM, xm, yM, ym)
