@@ -9,17 +9,65 @@ class DynamicCropper:
     def __init__(self, crop_size = "640"):
         self.crop_size = crop_size
 
-    def crop_img(self, img, bbs):
+    def crop_img(self, img, center_x, center_y):
+        half_crop_w, half_crop_h = int(self.crop_w / 2), int(self.crop_h / 2)
+        cropped_img = img[center_y - half_crop_h : center_y + half_crop_h,
+                            center_x - half_crop_w : center_x + half_crop_w]
+        return cropped_img
+
+    def get_crop_center(self, img_w, img_h, xM, xm, yM, ym):
+        half_crop_w, half_crop_h = int(self.crop_w / 2), int(self.crop_h / 2)
+
+        # If all bounding boxes fit into a cropped area centered
+        # around the middle of the image, don't crop
+        #
+        # middle_x, middle_y = int(img_w / 2), int(img_h / 2)
+        # centerMargines = [middle_x + half_crop_w, middle_x - half_crop_w,
+        #                   middle_y + half_crop_h, middle_y - half_crop_h]
+        # # fitsInMiddleMargines = True
+        # for i in range(4):
+        #     if i % 2 == 0:
+        #         if not centerMargines[i] >= marginList[i]:
+        #             fitsInMiddleMargines = False
+        #     else:
+        #         if not centerMargines[i] <= marginList[i]:
+        #             fitsInMiddleMargines = False
+        # if fitsInMiddleMargines:
+        #     return middleX, middleY
+        # else:
+
+        center_x = int((xM + xm) / 2)
+        center_y = int((yM + ym) / 2)
+
+        if half_crop_w <= center_x:
+            if center_x > img_w - half_crop_w:
+                center_x = img_w - half_crop_w
+        else:
+            center_x = half_crop_w
+        
+        if half_crop_h <= center_y:
+            if center_y > img_h - half_crop_h:
+                center_y = img_h - half_crop_h
+        else:
+            center_y = half_crop_h
+        
+        return center_x, center_y
+
+    def borders_exceed(self, xM, xm, yM, ym):
+        if xM - xm >= int(self.crop_w) or yM - ym >= int(self.crop_h):
+            return True
+        return False
+
+    def crop(self, img, bbs):
         img_shape = img.shape
         img_w, img_h = img_shape[1], img_shape[0]
-        cropper = Cropper(img_w, img_h, self.crop_size, self.crop_size)
+        # cropper = Cropper(img_w, img_h, self.crop_size, self.crop_size)
         bbs.to_pixel(img_w, img_h)
-        xM, xm, yM, ym = cropper.get_borders(bbs)
-        borders_exceed = not cropper.check(xM, xm, yM, ym)
-        if borders_exceed:
-            raise Exception("All bounding boxes don't fit into the cropped area.")
-        center_x, center_y = cropper.get_crop_center(img_w, img_h, xM, xm, yM, ym)
-        cropped_img = cropper.crop(img, center_x, center_y, img_w, img_h)
+        xM, xm, yM, ym = self.get_borders(bbs)
+        if self.borders_exceed(xM, xm, yM, ym):
+            raise Exception("The bounding boxes can't fit into the cropped area.")
+        center_x, center_y = self.get_crop_center(img_w, img_h, xM, xm, yM, ym)
+        cropped_img = self.crop_img(img, center_x, center_y)
         cropped_img_shape = cropped_img.shape
         bbs.to_cropped(cropped_img_shape[1], cropped_img_shape[0], center_x, center_y)
         return cropped_img, bbs
@@ -27,7 +75,7 @@ class DynamicCropper:
     def process_file(self, img_path, output_path):
         grabber = YoloDatasetGrabber()
         img, bbs, label_path = grabber.get_data(img_path)
-        out_img, out_bbs = self.crop_img(img, bbs)
+        out_img, out_bbs = self.crop(img, bbs)
         out_label = out_bbs.label()
         out_img_path = output_path + "/" + os.path.basename(img_path)
         pre_extension_path, extension = os.path.splitext(out_img_path.replace("\\", "/"))
@@ -45,7 +93,7 @@ class DynamicCropper:
             if total_processed_files % skip != 0:
                 continue
             try:
-                out_img, out_bbs = self.crop_img(img, bbs)
+                out_img, out_bbs = self.crop(img, bbs)
             except:
                 continue
             filtered_files += 1

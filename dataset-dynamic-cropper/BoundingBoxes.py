@@ -74,6 +74,20 @@ class BoundingBoxes:
             self.bbs[i] = bb
     """
 
+    def borders(self):
+        bb_class, bb_x, bb_y, bb_w, bb_h = self.bb_values(0)
+        xM = bb_x + bb_w / 2
+        xm = bb_x - bb_w / 2
+        yM = bb_y + bb_h / 2
+        ym = bb_y - bb_h / 2
+        for i in range(1, len(self.bbs)):
+            bb_class, bb_x, bb_y, bb_w, bb_h = bbs.bb_values(i)
+            xM = max(xM, bb_x + bb_w / 2)
+            xm = min(xm, bb_x - bb_w / 2)
+            yM = max(yM, bb_y + bb_h / 2)
+            ym = min(ym, bb_y - bb_h / 2)
+        return xM, xm, yM, ym
+
     def to_cropped(self, crop_w, crop_h, center_x, center_y):
         if not self.is_normalized: raise Exception("Bounding boxes need to be in pixel format.")
         self.format = "normalized"
