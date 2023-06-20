@@ -25,7 +25,7 @@ def main():
         help="cropped image size - default: 640",
     )
     parser.add_argument(
-        "--skip", type=int, default=1, required=False, help="skip - default: 1"
+        "--skip", type=int, default=1, required=False, help="Image skip interval - default: 1 (no skipping)"
     )
     args = parser.parse_args()
 
