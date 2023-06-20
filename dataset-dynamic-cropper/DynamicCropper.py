@@ -92,7 +92,7 @@ class DynamicCropper:
         grabber = YoloDatasetGrabber()
         for img, bbs, img_path, label_path in grabber.iget_directory_data(input_path, image_extension, recursive):
             total_processed_files += 1
-            print(f"\r{img_path}", end="")
+            print(f"\r{img_path}", end="\x1b[1K")
             if total_processed_files % skip != 0:
                 continue
             try:
