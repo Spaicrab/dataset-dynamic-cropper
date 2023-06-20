@@ -13,7 +13,9 @@ class DynamicCropper:
 
     def crop_img(self, img, center_x, center_y):
         """Returns img cropped with center_x and center_y as center"""
-        half_crop_w, half_crop_h = int(self.crop_size / 2), int(self.crop_size / 2)
+        img_w, img_h = self.get_img_size(img)
+        crop_w, crop_h = min(img_w, self.crop_size), min(img_h, self.crop_size)
+        half_crop_w, half_crop_h = int(crop_w / 2), int(crop_h / 2)
         cropped_img = img[center_y - half_crop_h : center_y + half_crop_h,
                             center_x - half_crop_w : center_x + half_crop_w]
         return cropped_img
