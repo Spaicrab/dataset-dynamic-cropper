@@ -29,7 +29,7 @@ class YoloDatasetGrabber:
         with open(label_path , 'w') as f:
             f.write(label)
     
-    def iget_directory_data(self, directory_path, img_extension = "jpg", recursive = False):
+    def iget_directory_data(self, directory_path, img_extension="jpg", recursive=False):
         """Read data of all img files in the directory and its subdirectories.
         Iterates over img, bbs, img_path, label_path"""
         file_condition = directory_path
@@ -37,14 +37,14 @@ class YoloDatasetGrabber:
             file_condition += '/**/*.' + img_extension
         else:
             file_condition += '/*.' + img_extension
-        for img_path in glob.iglob(file_condition, recursive = recursive):
+        for img_path in glob.iglob(file_condition, recursive=recursive):
             try:
                 img, bbs, label_path = self.get_data(img_path)
                 yield img, bbs, img_path, label_path
             except:
                 pass
 
-    def get_directory_data(self, directory_path, img_extension = "jpg", recursive = False):
+    def get_directory_data(self, directory_path, img_extension="jpg", recursive=False):
         """Read data of all img files in the directory and its subdirectories.
         Returns a list of tuples with img, bbs, img_path, label_path"""
         return list(self.iget_directory_data(directory_path, img_extension, recursive))
