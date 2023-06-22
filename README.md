@@ -35,9 +35,7 @@ cropper.process_directory(input_path, output_path, [image_extension], [skip], [r
 ## BoundingBoxes
 ### Usage
 ```
-import os
-
-with open(os.path.join(os.getcwd(), label_path), 'r') as label:
+with open(label_path, 'r') as label:
     bbs = BoundingBoxes(label)
 ```
 
