@@ -81,7 +81,7 @@ class BoundingBoxes:
         yM = bb_y + bb_h / 2
         ym = bb_y - bb_h / 2
         for i in range(1, len(self.bbs)):
-            bb_class, bb_x, bb_y, bb_w, bb_h = bbs.bb_values(i)
+            bb_class, bb_x, bb_y, bb_w, bb_h = self.bb_values(i)
             xM = max(xM, bb_x + bb_w / 2)
             xm = min(xm, bb_x - bb_w / 2)
             yM = max(yM, bb_y + bb_h / 2)
