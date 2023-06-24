@@ -112,6 +112,8 @@ class DynamicCropper:
             img_name = os.path.basename(img_path)
             grabber.write_data(output_path, img_name, out_img, out_bbs)
         print(f"\rFiltered {filtered_files} of {total_processed_files} files.")
-        if total_processed_files / filtered_files >= 2: # more than 50% loss
+        if filtered_files == 0:
+            print("The output size is too small. Try a bigger value.")
+        elif total_processed_files / filtered_files >= 2: # more than 50% loss
             print("Try a bigger size if you need more images.")
         return total_processed_files, filtered_files
