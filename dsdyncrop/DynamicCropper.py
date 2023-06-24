@@ -105,12 +105,13 @@ class DynamicCropper:
             if total_processed_files % skip != 0:
                 continue
             try:
-                print(img_path)
                 out_img, out_bbs = self.dynamic_crop(img, bbs)
             except:
-                raise
+                continue
             filtered_files += 1
             img_name = os.path.basename(img_path)
             grabber.write_data(output_path, img_name, out_img, out_bbs)
         print(f"\rFiltered {filtered_files} of {total_processed_files} files.")
+        if total_processed_files / filtered_files >= 2: # more than 50% loss
+            print("Try a bigger size if you need more images.")
         return total_processed_files, filtered_files
