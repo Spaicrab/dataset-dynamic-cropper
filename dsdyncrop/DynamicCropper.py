@@ -25,10 +25,9 @@ class DynamicCropper:
         img_shape = img.shape
         return img_shape[1], img_shape[0]
 
-    def borders_exceed(self, img_w, img_h, xM, xm, yM, ym) -> bool:
+    def borders_exceed(self, xM, xm, yM, ym) -> bool:
         """Returns True if bounding boxes' borders don't fit in a croppable area, otherwise False"""
-        crop_w, crop_h = min(img_w, self.crop_size), min(img_h, self.crop_size)
-        if xM - xm >= int(crop_w) or yM - ym >= int(crop_h):
+        if xM - xm >= self.crop_size or yM - ym >= self.crop_size:
             return True
         return False
 
@@ -77,7 +76,7 @@ class DynamicCropper:
         img_w, img_h = self.get_img_size(img)
         bbs.to_pixel(img_w, img_h)
         xM, xm, yM, ym = bbs.borders()
-        if self.borders_exceed(img_w, img_h, xM, xm, yM, ym):
+        if self.borders_exceed(xM, xm, yM, ym):
             raise Exception("The bounding boxes can't fit into the cropped area.")
         center_x, center_y = self.get_crop_center(img_w, img_h, xM, xm, yM, ym)
         cropped_img = self.crop_img(img, center_x, center_y)
@@ -106,9 +105,10 @@ class DynamicCropper:
             if total_processed_files % skip != 0:
                 continue
             try:
+                print(img_path)
                 out_img, out_bbs = self.dynamic_crop(img, bbs)
             except:
-                continue
+                raise
             filtered_files += 1
             img_name = os.path.basename(img_path)
             grabber.write_data(output_path, img_name, out_img, out_bbs)
